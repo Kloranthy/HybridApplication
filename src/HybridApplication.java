@@ -75,6 +75,13 @@ public class HybridApplication extends Application {
 			public void hello() {
 				System.out.println("hello world");
 			}
+			public String getStateJSON() {
+				return "test";
+			}
+
+			public void print(String out) {
+				System.out.println(out);
+			}
 			// >>this is where the getFrame() method will go<<
 		}
 	}
