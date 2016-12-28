@@ -37,6 +37,7 @@ public class HybridApplication extends Application {
 
 		public Browser() {
 			// todo apply stylesheet
+			webEngine.setJavaScriptEnabled(true);
 			// get index.html
 			String index = HybridApplication
 				.class
