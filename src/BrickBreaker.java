@@ -105,24 +105,24 @@ public class BrickBreaker {
 	}
 
 	class Arena {
-		private double width;
-		private double height;
+		private int width;
+		private int height;
 
 		public Arena() {}
 
-		public double getWidth() {
+		public int getWidth() {
 			return width;
 		}
 
-		public void setWidth(double width) {
+		public void setWidth(int width) {
 			this.width = width;
 		}
 
-		public double getHeight() {
+		public int getHeight() {
 			return height;
 		}
 
-		public void setHeight(double height) {
+		public void setHeight(int height) {
 			this.height = height;
 		}
 
@@ -137,51 +137,51 @@ public class BrickBreaker {
 	}
 
 	class Ball {
-		private double radius;
-		private double x;
-		private double y;
-		private double dx;
-		private double dy;
+		private int radius;
+		private int x;
+		private int y;
+		private int dx;
+		private int dy;
 
 		public Ball() {}
 
-		public double getRadius() {
+		public int getRadius() {
 			return radius;
 		}
 
-		public void setRadius(double radius) {
+		public void setRadius(int radius) {
 			this.radius = radius;
 		}
 
-		public double getX() {
+		public int getX() {
 			return x;
 		}
 
-		public void setX(double x) {
+		public void setX(int x) {
 			this.x = x;
 		}
 
-		public double getY() {
+		public int getY() {
 			return y;
 		}
 
-		public void setY(double y) {
+		public void setY(int y) {
 			this.y = y;
 		}
 
-		public double getDX() {
+		public int getDX() {
 			return dx;
 		}
 
-		public void setDX(double dx) {
+		public void setDX(int dx) {
 			this.dx = dx;
 		}
 
-		public double getDY() {
+		public int getDY() {
 			return dy;
 		}
 
-		public void setDY(double dy) {
+		public void setDY(int dy) {
 			this.dy = dy;
 		}
 
@@ -204,51 +204,51 @@ public class BrickBreaker {
 	}
 
 	class Paddle {
-		private double width;
-		private double height;
-		private double x;
-		private double y;
-		private double dx;
+		private int width;
+		private int height;
+		private int x;
+		private int y;
+		private int dx;
 
 		public Paddle() {}
 
-		public double getWidth() {
+		public int getWidth() {
 			return width;
 		}
 
-		public void setWidth(double width) {
+		public void setWidth(int width) {
 			this.width = width;
 		}
 
-		public double getHeight() {
+		public int getHeight() {
 			return height;
 		}
 
-		public void setHeight(double height) {
+		public void setHeight(int height) {
 			this.height = height;
 		}
 
-		public double getX() {
+		public int getX() {
 			return x;
 		}
 
-		public void setX(double x) {
+		public void setX(int x) {
 			this.x = x;
 		}
 
-		public double getY() {
+		public int getY() {
 			return y;
 		}
 
-		public void setY(double y) {
+		public void setY(int y) {
 			this.y = y;
 		}
 
-		public double getDX() {
+		public int getDX() {
 			return dx;
 		}
 
-		public void setDX(double dx) {
+		public void setDX(int dx) {
 			this.dx = dx;
 		}
 
@@ -270,48 +270,48 @@ public class BrickBreaker {
 	}
 
 	class Brick {
-		private double width;
-		private double height;
-		private double x;
-		private double y;
+		private int width;
+		private int height;
+		private int x;
+		private int y;
 		private boolean isBroken;
 
 		public Brick() {}
 
-		public Brick(double x, double y) {
+		public Brick(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
 
-		public double getWidth() {
+		public int getWidth() {
 			return width;
 		}
 
-		public void setWidth(double width) {
+		public void setWidth(int width) {
 			this.width = width;
 		}
 
-		public double getHeight() {
+		public int getHeight() {
 			return height;
 		}
 
-		public void setHeight(double height) {
+		public void setHeight(int height) {
 			this.height = height;
 		}
 
-		public double getX() {
+		public int getX() {
 			return x;
 		}
 
-		public void setX(double x) {
+		public void setX(int x) {
 			this.x = x;
 		}
 
-		public double getY() {
+		public int getY() {
 			return y;
 		}
 
-		public void setY(double y) {
+		public void setY(int y) {
 			this.y = y;
 		}
 
@@ -347,34 +347,34 @@ public class BrickBreaker {
 		public static final int FADING = 2;
 		public static final int FADED = 3;
 		public static final int GONE = 4;
-		private double radius;
-		private double x;
-		private double y;
+		private int radius;
+		private int x;
+		private int y;
 		private int status;
 
 		public Explosion() {}
 
-		public double getRadius() {
+		public int getRadius() {
 			return radius;
 		}
 
-		public void setRadius(double radius) {
+		public void setRadius(int radius) {
 			this.radius = radius;
 		}
 
-		public double getX() {
+		public int getX() {
 			return x;
 		}
 
-		public void setX(double x) {
+		public void setX(int x) {
 			this.x = x;
 		}
 
-		public double getY() {
+		public int getY() {
 			return y;
 		}
 
-		public void setY(double y) {
+		public void setY(int y) {
 			this.y = y;
 		}
 

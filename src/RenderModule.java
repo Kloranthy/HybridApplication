@@ -1,6 +1,8 @@
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,10 +24,17 @@ public class RenderModule {
 			"lives:2" +
 			"}";
 		RenderModule renderModule = new RenderModule();
-		renderModule.drawFrame(frameJSON);
+		BufferedImage frame = renderModule.drawFrame(frameJSON);
+		File out = new File("frame.png");
+		try {
+			ImageIO.write(frame, "png", out);
+		}
+		catch (IOException io) {
+			io.printStackTrace();
+		}
 	}
 
-	public Canvas test() {
+	public BufferedImage test() {
 		String frameJSON = "{arena:{width:800,height:600}," +
 			"ball:{radius:10,x:300,y:300,dx:6,dy:6}," +
 			"paddle:{width:80,height:10,x:400,y:585,dx:10}," +
@@ -43,8 +52,9 @@ public class RenderModule {
 		return drawFrame(frameJSON);
 	}
 
-	public Canvas drawFrame(String frameJSON) {
+	public BufferedImage drawFrame(String frameJSON) {
 		// declare variables
+		BufferedImage frame;
 		int start;
 		int end;
 		String arenaJSON;
@@ -125,50 +135,79 @@ public class RenderModule {
 			System.out.println("no explosions");
 		}
 		// parse parts? todo convert this to batch
-		// draw parts on sub canvases todo convert this to batch
-		Canvas arenaCanvas = drawArena(arenaJSON);
-		SubCanvas ballCanvas = drawBall(ballJSON);
-		SubCanvas paddleCanvas = drawPaddle(paddleJSON);
-		List<SubCanvas> brickCanvasList = new LinkedList<SubCanvas>();
+		// draw parts on sprites todo convert this to batch
+		BufferedImage arenaImage = drawArena(arenaJSON);
+		Sprite ballSprite = drawBall(ballJSON);
+		Sprite paddleSprite = drawPaddle(paddleJSON);
+		List<Sprite> brickSpriteList = new LinkedList<Sprite>();
 		for (String brickJSON : brickJSONList) {
-			SubCanvas brickCanvas = drawBrick(brickJSON);
+			Sprite brickSprite = drawBrick(brickJSON);
+			brickSpriteList.add(brickSprite);
 		}
-		// draw sub canvases on frame canvas
-		Canvas frameCanvas = arenaCanvas;
-		GraphicsContext graphicsContext = frameCanvas.getGraphicsContext2D();
-		graphicsContext.drawImage(
-			ballCanvas.getCanvas().snapshot(null, null),
-			ballCanvas.getX(),
-			ballCanvas.getY(),
-			ballCanvas.getCanvas().getWidth(),
-			ballCanvas.getCanvas().getWidth()
+		List<Sprite> explosionSpriteList = new LinkedList<Sprite>();
+		for (String explosionJSON : explosionJSONList) {
+			Sprite explosionSprite = drawExplosion(explosionJSON);
+			explosionSpriteList.add(explosionSprite);
+		}
+		// draw sub canvases on buffered image
+		frame = new BufferedImage(
+			arenaImage.getWidth(),
+			arenaImage.getHeight(),
+			BufferedImage.TYPE_3BYTE_BGR
 		);
+		Graphics2D graphics2D = frame.createGraphics();
+		graphics2D.drawImage(
+			ballSprite.getBufferedImage(),
+			ballSprite.getX(),
+			ballSprite.getY(),
+			null
+		);
+		graphics2D.drawImage(
+			paddleSprite.getBufferedImage(),
+			paddleSprite.getX(),
+			paddleSprite.getY(),
+			null
+		);
+		for (Sprite brickSprite : brickSpriteList) {
+			graphics2D.drawImage(
+				brickSprite.getBufferedImage(),
+				brickSprite.getX(),
+				brickSprite.getY(),
+				null
+			);
+		}
+		for (Sprite explosionSprite : explosionSpriteList) {
+			graphics2D.drawImage(
+				explosionSprite.getBufferedImage(),
+				explosionSprite.getX(),
+				explosionSprite.getY(),
+				null
+			);
+		}
 		// do something with frame canvas to make it available to ui
-		return frameCanvas;
+		return frame;
 	}
 
-	private Canvas drawArena(String arenaJSON) {
+	private BufferedImage drawArena(String arenaJSON) {
 		int start;
 		int end;
-		double width;
-		double height;
+		int width;
+		int height;
 		start = arenaJSON.indexOf("width:") + 6;
 		end = arenaJSON.indexOf(",");
-		width = Double.parseDouble(
+		width = Integer.parseInt(
 			arenaJSON.substring(start, end)
 		);
 		start = arenaJSON.indexOf("height:") + 7;
 		end = arenaJSON.indexOf("}");
-		height = Double.parseDouble(
+		height = Integer.parseInt(
 			arenaJSON.substring(start, end)
 		);
-		Canvas canvas = new Canvas();
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-		graphicsContext.setFill(Color.BLACK);
-		graphicsContext.fillRect(0, 0, width, height);
-		return canvas;
+		BufferedImage arenaImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D graphics2D = arenaImage.createGraphics();
+		graphics2D.setPaint(Color.BLACK);
+		graphics2D.fillRect(0, 0, width, height);
+		return arenaImage;
 	}
 
 	/**
@@ -177,42 +216,44 @@ public class RenderModule {
 	 * @param ballJSON
 	 * @return
 	 */
-	private SubCanvas drawBall(String ballJSON) {
+	private Sprite drawBall(String ballJSON) {
 		int start;
 		int end;
-		double radius;
-		double x;
-		double y;
-		double width;
-		double height;
+		int radius;
+		int x;
+		int y;
+		int width;
+		int height;
 		start = ballJSON.indexOf("radius:") + 7;
 		end = ballJSON.indexOf(",", start);
-		radius = Double.parseDouble(
+		radius = Integer.parseInt(
 			ballJSON.substring(start, end)
 		);
 		start = ballJSON.indexOf("x:", end) + 2;
 		end = ballJSON.indexOf(",", start);
-		x = Double.parseDouble(
+		x = Integer.parseInt(
 			ballJSON.substring(start, end)
 		);
 		start = ballJSON.indexOf("y:", end) + 2;
 		end = ballJSON.indexOf(",", start);
-		y = Double.parseDouble(
+		y = Integer.parseInt(
 			ballJSON.substring(start, end)
 		);
 		width = radius * 2;
 		height = radius * 2;
-		Canvas canvas = new Canvas();
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-		graphicsContext.setFill(Color.GREEN);
-		graphicsContext.fillOval(0, 0, width, height);
-		SubCanvas subCanvas = new SubCanvas();
-		subCanvas.setCanvas(canvas);
-		subCanvas.setX(x);
-		subCanvas.setY(y);
-		return subCanvas;
+		BufferedImage bufferedImage = new BufferedImage(
+			width,
+			height,
+			BufferedImage.TYPE_3BYTE_BGR
+		);
+		Graphics2D graphics2D = bufferedImage.createGraphics();
+		graphics2D.setPaint(Color.GREEN);
+		graphics2D.fillOval(0, 0, width, height);
+		Sprite sprite = new Sprite();
+		sprite.setBufferedImage(bufferedImage);
+		sprite.setX(x);
+		sprite.setY(y);
+		return sprite;
 	}
 
 	/**
@@ -221,44 +262,46 @@ public class RenderModule {
 	 * @param paddleJSON
 	 * @return
 	 */
-	private SubCanvas drawPaddle(String paddleJSON) {
+	private Sprite drawPaddle(String paddleJSON) {
 		int start;
 		int end;
-		double width;
-		double height;
-		double x;
-		double y;
+		int width;
+		int height;
+		int x;
+		int y;
 		start = paddleJSON.indexOf("width:") + 6;
 		end = paddleJSON.indexOf(",", start);
-		width = Double.parseDouble(
+		width = Integer.parseInt(
 			paddleJSON.substring(start, end)
 		);
 		start = paddleJSON.indexOf("height:", end) + 7;
 		end = paddleJSON.indexOf(",", start);
-		height = Double.parseDouble(
+		height = Integer.parseInt(
 			paddleJSON.substring(start, end)
 		);
 		start = paddleJSON.indexOf("x:", end) + 2;
 		end = paddleJSON.indexOf(",", start);
-		x = Double.parseDouble(
+		x = Integer.parseInt(
 			paddleJSON.substring(start, end)
 		);
 		start = paddleJSON.indexOf("y:", end) + 2;
 		end = paddleJSON.indexOf(",", start);
-		y = Double.parseDouble(
+		y = Integer.parseInt(
 			paddleJSON.substring(start, end)
 		);
-		Canvas canvas = new Canvas();
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-		graphicsContext.setFill(Color.GREEN);
-		graphicsContext.fillRect(0, 0, width, height);
-		SubCanvas subCanvas = new SubCanvas();
-		subCanvas.setCanvas(canvas);
-		subCanvas.setX(x);
-		subCanvas.setY(y);
-		return subCanvas;
+		BufferedImage bufferedImage = new BufferedImage(
+			width,
+			height,
+			BufferedImage.TYPE_3BYTE_BGR
+		);
+		Graphics2D graphics2D = bufferedImage.createGraphics();
+		graphics2D.setPaint(Color.GREEN);
+		graphics2D.fillRect(x, y, width, height);
+		Sprite sprite = new Sprite();
+		sprite.setBufferedImage(bufferedImage);
+		sprite.setX(x);
+		sprite.setY(y);
+		return sprite;
 	}
 
 	/**
@@ -267,68 +310,70 @@ public class RenderModule {
 	 * @param brickJSON
 	 * @return
 	 */
-	private SubCanvas drawBrick(String brickJSON) {
+	private Sprite drawBrick(String brickJSON) {
 		int start;
 		int end;
-		double width;
-		double height;
-		double x;
-		double y;
+		int width;
+		int height;
+		int x;
+		int y;
 		start = brickJSON.indexOf("width:") + 6;
 		end = brickJSON.indexOf(",", start);
-		width = Double.parseDouble(
+		width = Integer.parseInt(
 			brickJSON.substring(start, end)
 		);
 		start = brickJSON.indexOf("height:", end) + 7;
 		end = brickJSON.indexOf(",", start);
-		height = Double.parseDouble(
+		height = Integer.parseInt(
 			brickJSON.substring(start, end)
 		);
 		start = brickJSON.indexOf("x:", end) + 2;
 		end = brickJSON.indexOf(",", start);
-		x = Double.parseDouble(
+		x = Integer.parseInt(
 			brickJSON.substring(start, end)
 		);
 		start = brickJSON.indexOf("y:", end) + 2;
 		end = brickJSON.indexOf(",", start);
-		y = Double.parseDouble(
+		y = Integer.parseInt(
 			brickJSON.substring(start, end)
 		);
-		Canvas canvas = new Canvas();
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-		graphicsContext.setFill(Color.GREEN);
-		graphicsContext.fillRect(0, 0, width, height);
-		SubCanvas subCanvas = new SubCanvas();
-		subCanvas.setCanvas(canvas);
-		subCanvas.setX(x);
-		subCanvas.setY(y);
-		return subCanvas;
+		BufferedImage bufferedImage = new BufferedImage(
+			width,
+			height,
+			BufferedImage.TYPE_3BYTE_BGR
+		);
+		Graphics2D graphics2D = bufferedImage.createGraphics();
+		graphics2D.setPaint(Color.GREEN);
+		graphics2D.fillRect(x, y, width, height);
+		Sprite sprite = new Sprite();
+		sprite.setBufferedImage(bufferedImage);
+		sprite.setX(x);
+		sprite.setY(y);
+		return sprite;
 	}
 
-	private SubCanvas drawExplosion(String explosionJSON) {
+	private Sprite drawExplosion(String explosionJSON) {
 		int start;
 		int end;
-		double radius;
-		double width;
-		double height;
-		double x;
-		double y;
+		int radius;
+		int width;
+		int height;
+		int x;
+		int y;
 		int status;
 		start = explosionJSON.indexOf("radius:") + 7;
 		end = explosionJSON.indexOf(",", start);
-		radius = Double.parseDouble(
+		radius = Integer.parseInt(
 			explosionJSON.substring(start, end)
 		);
 		start = explosionJSON.indexOf("x:", end) + 2;
 		end = explosionJSON.indexOf(",", start);
-		x = Double.parseDouble(
+		x = Integer.parseInt(
 			explosionJSON.substring(start, end)
 		);
 		start = explosionJSON.indexOf("y:", end) + 2;
 		end = explosionJSON.indexOf(",", start);
-		y = Double.parseDouble(
+		y = Integer.parseInt(
 			explosionJSON.substring(start, end)
 		);
 		start = explosionJSON.indexOf("status:", end) + 7;
@@ -338,47 +383,49 @@ public class RenderModule {
 		);
 		width = radius * 2;
 		height = radius * 2;
-		Canvas canvas = new Canvas();
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-		graphicsContext.setFill(Color.YELLOWGREEN);
-		graphicsContext.fillOval(0, 0, width, height);
-		SubCanvas subCanvas = new SubCanvas();
-		subCanvas.setCanvas(canvas);
-		subCanvas.setX(x);
-		subCanvas.setY(y);
-		return subCanvas;
+		BufferedImage bufferedImage = new BufferedImage(
+			width,
+			height,
+			BufferedImage.TYPE_3BYTE_BGR
+		);
+		Graphics2D graphics2D = bufferedImage.createGraphics();
+		graphics2D.setPaint(Color.GREEN);
+		graphics2D.fillOval(0, 0, width, height);
+		Sprite sprite = new Sprite();
+		sprite.setBufferedImage(bufferedImage);
+		sprite.setX(x);
+		sprite.setY(y);
+		return sprite;
 	}
 
-	private class SubCanvas {
-		private Canvas canvas;
-		private double x;
-		private double y;
+	private class Sprite {
+		private BufferedImage bufferedImage;
+		private int x;
+		private int y;
 
-		public SubCanvas() {}
+		public Sprite() {}
 
-		public Canvas getCanvas() {
-			return canvas;
+		public BufferedImage getBufferedImage() {
+			return bufferedImage;
 		}
 
-		public void setCanvas(Canvas canvas) {
-			this.canvas = canvas;
+		public void setBufferedImage(BufferedImage bufferedImage) {
+			this.bufferedImage = bufferedImage;
 		}
 
-		public double getX() {
+		public int getX() {
 			return x;
 		}
 
-		public void setX(double x) {
+		public void setX(int x) {
 			this.x = x;
 		}
 
-		public double getY() {
+		public int getY() {
 			return y;
 		}
 
-		public void setY(double y) {
+		public void setY(int y) {
 			this.y = y;
 		}
 	}

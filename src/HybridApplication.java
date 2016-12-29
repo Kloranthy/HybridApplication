@@ -3,13 +3,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+
+import java.awt.image.BufferedImage;
 
 public class HybridApplication extends Application {
 	private Scene scene;
@@ -88,12 +89,28 @@ public class HybridApplication extends Application {
 				webEngine.load(html);
 			}
 
+			public void launchRenderTest() {
+				// get html
+				String html = HybridApplication
+					.class
+					.getResource("render-test.html")
+					.toExternalForm();
+				// load page
+				webEngine.load(html);
+			}
+
 			public void renderTest() {
 				System.out.println("render test started");
 				RenderModule renderModule = new RenderModule();
-				Canvas canvas = renderModule.test();
-				getChildren().clear();
-				getChildren().add(canvas);
+				BufferedImage frame = renderModule.test();
+				JSObject window = (JSObject) webEngine
+					.executeScript("window");
+				window.setMember(
+					"frame",
+					frame
+				);
+				webEngine.executeScript("drawFrame()");
+
 			}
 
 			public void exit() {
