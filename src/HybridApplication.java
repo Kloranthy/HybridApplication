@@ -12,6 +12,9 @@ import netscape.javascript.JSObject;
 
 public class HybridApplication extends Application {
 	private Scene scene;
+	private Browser browser;
+
+	private boolean running;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -19,9 +22,11 @@ public class HybridApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		// create the browser
+		browser = new Browser();
 		// create scene
 		scene = new Scene(
-			new Browser(),
+			browser,
 			800,
 			600,
 			Color.web("#000000")
@@ -38,10 +43,10 @@ public class HybridApplication extends Application {
 		public Browser() {
 			// todo apply stylesheet
 			webEngine.setJavaScriptEnabled(true);
-			// get index.html
-			String index = HybridApplication
+			// get html
+			String html = HybridApplication
 				.class
-				.getResource("index.html")
+				.getResource("main-menu.html")
 				.toExternalForm();
 			// process page loading
 			webEngine.getLoadWorker()
@@ -58,7 +63,7 @@ public class HybridApplication extends Application {
 								JSObject window = (JSObject) webEngine
 									.executeScript("window");
 								window.setMember(
-									"app",
+									"java",
 									new JavaApp()
 								);
 							}
@@ -66,15 +71,26 @@ public class HybridApplication extends Application {
 					}
 				);
 			// load page
-			webEngine.load(index);
+			webEngine.load(html);
 			// add to JavaFX app
 			getChildren().add(webView);
 		}
 
 		public class JavaApp {
-			public void hello() {
-				System.out.println("hello world");
+			public void launchBrickBreaker() {
+				// get html
+				String html = HybridApplication
+					.class
+					.getResource("brick-breaker.html")
+					.toExternalForm();
+				// load page
+				webEngine.load(html);
 			}
+
+			public void exit() {
+				// todo add platform.exit()
+			}
+
 			public String getStateJSON() {
 				return "test";
 			}
