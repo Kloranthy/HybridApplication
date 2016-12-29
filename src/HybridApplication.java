@@ -3,6 +3,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
@@ -85,6 +86,14 @@ public class HybridApplication extends Application {
 					.toExternalForm();
 				// load page
 				webEngine.load(html);
+			}
+
+			public void renderTest() {
+				System.out.println("render test started");
+				RenderModule renderModule = new RenderModule();
+				Canvas canvas = renderModule.test();
+				getChildren().clear();
+				getChildren().add(canvas);
 			}
 
 			public void exit() {

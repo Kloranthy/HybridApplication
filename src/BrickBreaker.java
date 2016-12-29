@@ -108,9 +108,7 @@ public class BrickBreaker {
 		private double width;
 		private double height;
 
-		public Arena() {
-			// default values
-		}
+		public Arena() {}
 
 		public double getWidth() {
 			return width;
@@ -145,9 +143,7 @@ public class BrickBreaker {
 		private double dx;
 		private double dy;
 
-		public Ball() {
-			// use default values
-		}
+		public Ball() {}
 
 		public double getRadius() {
 			return radius;
@@ -214,9 +210,7 @@ public class BrickBreaker {
 		private double y;
 		private double dx;
 
-		public Paddle() {
-			//
-		}
+		public Paddle() {}
 
 		public double getWidth() {
 			return width;
@@ -282,9 +276,7 @@ public class BrickBreaker {
 		private double y;
 		private boolean isBroken;
 
-		public Brick() {
-			// default values?
-		}
+		public Brick() {}
 
 		public Brick(double x, double y) {
 			this.x = x;
@@ -359,6 +351,8 @@ public class BrickBreaker {
 		private double x;
 		private double y;
 		private int status;
+
+		public Explosion() {}
 
 		public double getRadius() {
 			return radius;
